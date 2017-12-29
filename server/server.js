@@ -5,6 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 var shortid = require('shortid');
+var date = require('date-and-time');
 
 var {mongoose} = require('./db/mongoose');
 var {Licence} = require('./models/licence');
@@ -51,8 +52,10 @@ app.post('/verifyKey', (req, res) => {
       return res.status(404).send("false");
     };
     var year = doc.year;
-    var ad = Date.now().toString();
-    var ed = new Date(Date.now() + (1000 * 60  * 60  * 24  * 365 * year)).toString();
+    var ad = date.format(new Date(), 'DD-MM-YYYY');
+    let now = new Date();
+    var edd = date.addYears(now, year);
+    var ed = date.format(new Date(edd), 'DD-MM-YYYY');
     var active = true;
 
     Licence.findOneAndUpdate({key}, {$set: {year,ad,ed,active,deviceid}}, {new: true}).then((doc) => {
