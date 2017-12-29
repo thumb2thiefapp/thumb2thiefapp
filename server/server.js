@@ -201,18 +201,18 @@ app.post('/logoutUser', authenticate, (req, res) => {
   });
 });
 
-app.post('/registerUser', (req, res) => {
-  var body = _.pick(req.body, ['username', 'password']);
-  var user = new User(body);
+// app.post('/registerUser', (req, res) => {
+//   var body = _.pick(req.body, ['username', 'password']);
+//   var user = new User(body);
 
-  user.save().then(() => {
-    return user.generateAuthToken();
-  }).then((token) => {
-    res.header('x-auth', token).send({token,user});
-  }).catch((e) => {
-    res.status(400).send(e);
-  })
-});
+//   user.save().then(() => {
+//     return user.generateAuthToken();
+//   }).then((token) => {
+//     res.header('x-auth', token).send({token,user});
+//   }).catch((e) => {
+//     res.status(400).send(e);
+//   })
+// });
 
 
 // --------------------------------
