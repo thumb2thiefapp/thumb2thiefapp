@@ -51,8 +51,8 @@ app.post('/verifyKey', (req, res) => {
       return res.status(404).send("false");
     };
     var year = doc.year;
-    var ad = Date.now();
-    var ed = new Date(Date.now() + (1000 * 60  * 60  * 24  * 365 * year))
+    var ad = Date.now().toString();
+    var ed = new Date(Date.now() + (1000 * 60  * 60  * 24  * 365 * year)).toString();
     var active = true;
 
     Licence.findOneAndUpdate({key}, {$set: {year,ad,ed,active,deviceid}}, {new: true}).then((doc) => {
