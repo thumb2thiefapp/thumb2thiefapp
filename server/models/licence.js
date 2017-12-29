@@ -11,12 +11,12 @@ var Licence = mongoose.model('Licence', {
     default: false
   },
   ad: {
-    type: Date,
-    default: Date.now()
+    type: String,
+    default: Date.now().toString()
   },
   ed: {
-    type: Date,
-    default: Date.now()
+    type: String,
+    default: Date.now().toString()
   },
   deviceid: {
     type: String,
