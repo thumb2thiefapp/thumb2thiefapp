@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/getdetailById', (req, res) => {
   var deviceid = req.body.deviceid;
 
-  Licence.findOne({deviceid}).then((doc) => {
+  Licence.findOne({deviceid}, {}, { sort: { '_id' : -1 } }).then((doc) => {
     if (!doc) {
       return res.status(404).send();
     }
@@ -37,7 +37,7 @@ app.post('/getdetailById', (req, res) => {
 });
 
 app.post('/verifyKey', (req, res) => {
-  var key = req.body.key;
+  var key = req.body.key.toLowerCase();
   var deviceid = req.body.deviceid;
 
   Licence.findOne({key}).then((doc) => {
@@ -51,14 +51,14 @@ app.post('/verifyKey', (req, res) => {
     if (doc.active === true) {
       return res.status(404).send("false");
     };
-    var year = doc.year;
+    var days = doc.days;
     var ad = date.format(new Date(), 'DD-MM-YYYY');
     let now = new Date();
-    var edd = date.addYears(now, year);
+    var edd = date.addDays(now, days);
     var ed = date.format(new Date(edd), 'DD-MM-YYYY');
     var active = true;
 
-    Licence.findOneAndUpdate({key}, {$set: {year,ad,ed,active,deviceid}}, {new: true}).then((doc) => {
+    Licence.findOneAndUpdate({key}, {$set: {days,ad,ed,active,deviceid}}, {new: true}).then((doc) => {
     if (!doc) {
       return res.status(404).send();
     }
@@ -80,14 +80,17 @@ app.post('/verifyKey', (req, res) => {
 
 
 app.post('/createKeys', authenticate, (req, res) => {
-  var year = req.body.year;
+  var days = req.body.days; //actually days
   var number = req.body.number;
+  var keyfor = req.body.keyfor;
 
   for (var i = 0; i < number; i++) {
 
     var licence = new Licence({
-      key : shortid.generate(),
-    _creator: req.user._id,
+      key : shortid.generate().toLowerCase(),
+      days : req.body.days,
+      keyfor : req.body.keyfor,
+    _creator: req.user._id
     
   });
 
@@ -101,23 +104,24 @@ app.post('/createKeys', authenticate, (req, res) => {
 
 });
 
-app.post('/createKey', authenticate, (req, res) => {
-  var key = shortid.generate();
+// app.post('/createKey', authenticate, (req, res) => {
+//   var key = shortid.generate();
 
-  var licence = new Licence({
-    key,
-    year : req.body.year,
-    _creator: req.user._id,
+//   var licence = new Licence({
+//     key,
+//     days : req.body.days,
+//     keyfor : req.body.keyfor,
+//     _creator: req.user._id
 
-  });
+//   });
 
-  licence.save().then((doc) => {
-    res.send(doc);
-    }, (e) => {
-    res.status(400).send(e);
-  });
+//   licence.save().then((doc) => {
+//     res.send(doc);
+//     }, (e) => {
+//     res.status(400).send(e);
+//   });
 
-});
+// });
 
 
 app.post('/getAllKey', authenticate, (req, res) => {
@@ -128,9 +132,18 @@ app.post('/getAllKey', authenticate, (req, res) => {
   });
 });
 
+app.post('/getKeyfor', authenticate, (req, res) => {
+  var keyfor = req.body.keyfor;
+  Licence.find({keyfor}).then((doc) => {
+    res.send({doc});
+  }, (e) => {
+    res.status(400).send(e);
+  });
+});
+
 
 app.post('/getdetailByKey', authenticate, (req, res) => {
-  var key = req.body.key;
+  var key = req.body.key.toLowerCase();
 
   Licence.findOne({key}).then((doc) => {
     if (!doc) {
@@ -145,7 +158,7 @@ app.post('/getdetailByKey', authenticate, (req, res) => {
 
 
 app.post('/removeKey', authenticate, (req, res) => {
-  var key = req.body.key;
+  var key = req.body.key.toLowerCase();
 
   Licence.findOneAndRemove({key}).then((doc) => {
     if (!doc) {
@@ -162,7 +175,7 @@ app.post('/removeKey', authenticate, (req, res) => {
 
 app.post('/updateKey', authenticate, (req, res) => {
 
-  var key = req.body.key;
+  var key = req.body.key.toLowerCase();
   var body = _.pick(req.body, ['key', 'ad','ed', 'deviceid','active','year']);
 
 

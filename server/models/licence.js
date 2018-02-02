@@ -6,6 +6,10 @@ var Licence = mongoose.model('Licence', {
     required: true,
     unique: true
   },
+  keyfor: {
+    type: String,
+    default: "empty"
+  },
   active: {
     type: Boolean,
     default: false
@@ -23,7 +27,7 @@ var Licence = mongoose.model('Licence', {
     trim: true,
     default: "empty"
   },
-  year: {
+  days: { //actually days
     type: Number,
     default: 1
   },
