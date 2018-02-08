@@ -4,7 +4,7 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
-var shortid = require('shortid');
+var shortid = require('shortid-36');
 var date = require('date-and-time');
 
 var {mongoose} = require('./db/mongoose');
@@ -87,7 +87,7 @@ app.post('/createKeys', authenticate, (req, res) => {
   for (var i = 0; i < number; i++) {
 
     var licence = new Licence({
-      key : shortid.generate().toLowerCase(),
+      key : "tt-" + shortid.generate().toLowerCase(),
       days : req.body.days,
       keyfor : req.body.keyfor,
     _creator: req.user._id
